@@ -48,10 +48,6 @@ Metrics use a random 20% held-out split (seed 42). MAE and RMSE are in km/h. Inc
 - **Huber regression (models 10–12):** Same linear form, but it down-weights extreme readings. Choose it when a file has spikes or outliers (for example sudden acceleration or braking) and you still want a linear model. Model 11 has a small non-zero error (MAE 0.0056 km/h) and model 12 has a larger RMSE (0.125 km/h) caused by a few large misses.
 - **AdaBoost (model 13):** An ensemble of decision trees, and the only non-linear winner. It has the largest error of the set (MAE 0.033 km/h, RMSE 0.258 km/h), so it is less precise than the linear models on this file. Use it only if the relationship in a future file stops being linear, since it is harder to interpret and slower to retrain.
 
-## Limitations
-
-- **An R² of 1.0 means the relationship is exact in this data.** Speed is almost a fixed function of rpm here (about 0.045 × rpm, with gear adjusting it). The models have learned that rule. They will not necessarily score this high on a different vehicle, road, or driving style, so validate on new data before relying on them.
-- **Speed is an easy target because rpm is an input.** Harder targets, such as acceleration or yaw rate, give much lower and less consistent scores across files.
 - **Features differ per file.** Only columns that vary within a file are used, so constant sensors (`oil_bar`, `battery_v`, `tyre_*` in most files, `lat`, `lon`) are dropped. `time_s` is excluded. `incident_flag` is included as an input in every model, which is a small leak risk if the flag is only known after the event. The exact feature list for each model is in its `FEATURES` line.
 - **The split is random across rows, not by time.** Telemetry rows are sequential and neighbouring rows are alike, so the held-out scores are likely optimistic. A time-based split would be a stricter test.
 
